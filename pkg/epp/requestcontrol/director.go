@@ -201,7 +201,7 @@ func (d *Director) HandleRequest(ctx context.Context, reqCtx *handlers.RequestCo
 		span.End()
 	}()
 
-	logger := log.FromContext(ctx)
+	logger := logutil.WithTrace(ctx, log.FromContext(ctx))
 
 	// Record the client-facing model for every request, including forwarded-unchanged ones.
 	reqCtx.IncomingModelName = inferenceRequestBody.Model

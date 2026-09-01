@@ -697,11 +697,14 @@ func validatePortRange(startPort, rangeSize int) error {
 // with a custom level encoder that maps verbosity levels to their semantic
 // names instead of always rendering V(n) as "debug".
 func (opts *Options) NewLogger() logr.Logger {
-	config := uberzap.NewProductionEncoderConfig()
-	config.EncodeLevel = logutil.LevelEncoder
 	return zap.New(
 		zap.UseFlagOptions(&opts.loggingOptions),
-		zap.Encoder(zapcore.NewJSONEncoder(config)),
+		zap.WriteTo(os.Stdout),
+		zap.Encoder(zapcore.NewJSONEncoder(logutil.EncoderConfig())),
+		zap.RawZapOpts(
+			uberzap.WrapCore(logutil.WrapCore),
+			uberzap.Fields(uberzap.String("service.name", logutil.ServiceName("llm-d-router-disagg-sidecar"))),
+		),
 	)
 }
 
